@@ -6,11 +6,12 @@ pragma solidity 0.4.24;
 import './EclipticBase.sol';
 import './Claims.sol';
 
-import 'openzeppelin-solidity/contracts/introspection/SupportsInterfaceWithLookup.sol';
-import 'openzeppelin-solidity/contracts/token/ERC721/ERC721.sol';
-import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol';
-import 'openzeppelin-solidity/contracts/AddressUtils.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
+import '@openzeppelin/contracts/utils/Address.sol';
+import '@openzeppelin/contracts/utils/introspection/ERC165Storage.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 //  Ecliptic: logic for interacting with the Azimuth ledger
 //
@@ -48,7 +49,7 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 //    allowing points to be managed using generic clients that support the
 //    standard. It also implements ERC165 to allow this to be discovered.
 //
-contract Ecliptic is EclipticBase, SupportsInterfaceWithLookup, ERC721Metadata
+contract Ecliptic is EclipticBase, ERC165Storage, IERC721Metadata
 {
   using SafeMath for uint256;
   using AddressUtils for address;
@@ -174,7 +175,7 @@ contract Ecliptic is EclipticBase, SupportsInterfaceWithLookup, ERC721Metadata
       //
       if (_to.isContract())
       {
-        bytes4 retval = ERC721Receiver(_to)
+        bytes4 retval = IERC721Receiver(_to)
                         .onERC721Received(msg.sender, _from, _tokenId, _data);
         //
         //  standard return idiom to confirm contract semantics
